@@ -1,0 +1,105 @@
+@using Kitchen.Shared.Models
+@using Kitchen.Web.Services
+@inject YoloInferenceService YoloService
+@inject IJSRuntime JS
+
+<div class="fridge-scan">
+    <h2>Scan Your Fridge</h2>
+
+    <div class="capture-controls">
+        <label class="btn-primary">
+            Upload Photo
+            <InputFile OnChange="OnFileSelected" accept="image/*" style="display:none" />
+        </label>
+        <button class="btn-secondary" @onclick="StartCamera" disabled="@_cameraActive">
+            Use Camera
+        </button>
+    </div>
+
+    @if (_cameraActive)
+    {
+        <video id="camera-feed" autoplay playsinline style="width:100%;max-width:480px;border-radius:8px;"></video>
+        <button class="btn-primary" @onclick="CaptureFrame">Capture</button>
+    }
+
+    <canvas id="image-canvas" hidden></canvas>
+
+    @if (_loading)
+    {
+        <p class="status">Detecting ingredients...</p>
+    }
+
+    @if (DetectedIngredients.Count > 0)
+    {
+        <div class="ingredient-chips">
+            @foreach (var ing in DetectedIngredients)
+            {
+                <span class="chip">@ing.Name <small>@(ing.Confidence.ToString("P0"))</small></span>
+            }
+        </div>
+
+        <button class="btn-accent" @onclick="OnGenerateRecipe">Generate Recipe</button>
+    }
+</div>
+
+@code {
+    [Parameter] public EventCallback<List<Ingredient>> OnIngredientsDetected { get; set; }
+    [Parameter] public EventCallback OnGenerateClicked { get; set; }
+
+    public List<Ingredient> DetectedIngredients { get; private set; } = [];
+
+    private bool _loading;
+    private bool _cameraActive;
+
+    private async Task OnFileSelected(InputFileChangeEventArgs e)
+    {
+        _loading = true;
+        StateHasChanged();
+        try
+        {
+            await using var stream = e.File.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024);
+            using var ms = new MemoryStream();
+            await stream.CopyToAsync(ms);
+            await RunInferenceAsync(ms.ToArray());
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    private async Task StartCamera()
+    {
+        _cameraActive = true;
+        StateHasChanged();
+        await JS.InvokeVoidAsync("kitchenCamera.start", "camera-feed");
+    }
+
+    private async Task CaptureFrame()
+    {
+        _loading = true;
+        _cameraActive = false;
+        StateHasChanged();
+        try
+        {
+            var pixelData = await JS.InvokeAsync<PixelCapture>("kitchenCamera.capture", "camera-feed", "image-canvas");
+            DetectedIngredients = await YoloService.DetectAsync(pixelData.Rgba, pixelData.Width, pixelData.Height, default);
+            await OnIngredientsDetected.InvokeAsync(DetectedIngredients);
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    private async Task RunInferenceAsync(byte[] imageBytes)
+    {
+        var pixelData = await JS.InvokeAsync<PixelCapture>("kitchenCamera.decodeImage", imageBytes, "image-canvas");
+        DetectedIngredients = await YoloService.DetectAsync(pixelData.Rgba, pixelData.Width, pixelData.Height, default);
+        await OnIngredientsDetected.InvokeAsync(DetectedIngredients);
+    }
+
+    private async Task OnGenerateRecipe() => await OnGenerateClicked.InvokeAsync();
+
+    private record PixelCapture(byte[] Rgba, int Width, int Height);
+}

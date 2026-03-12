@@ -1,0 +1,36 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dir /a)",
+      "Bash(dotnet --version)",
+      "Bash(dotnet new:*)",
+      "Bash(dotnet *)",
+      "Bash(cd D:/GitHub/KitchenCopilot*)",
+      "Bash(cd D:/GitHub/KitchenCopilot && dotnet sln add Kitchen.AppHost/Kitchen.AppHost.csproj Kitchen.ServiceDefaults/Kitchen.ServiceDefaults.csproj Kitchen.Api/Kitchen.Api.csproj Kitchen.Web/Kitchen.Web.csproj Kitchen.Shared/Kitchen.Shared.csproj 2>&1)",
+      "Bash(cd D:/GitHub/KitchenCopilot && dotnet add Kitchen.Api/Kitchen.Api.csproj reference Kitchen.Shared/Kitchen.Shared.csproj Kitchen.ServiceDefaults/Kitchen.ServiceDefaults.csproj 2>&1 && dotnet add Kitchen.Web/Kitchen.Web.csproj reference Kitchen.Shared/Kitchen.Shared.csproj Kitchen.ServiceDefaults/Kitchen.ServiceDefaults.csproj 2>&1 && dotnet add Kitchen.AppHost/Kitchen.AppHost.csproj reference Kitchen.Api/Kitchen.Api.csproj Kitchen.Web/Kitchen.Web.csproj 2>&1)",
+      "Bash(cd D:/GitHub/KitchenCopilot && dotnet add Kitchen.AppHost/Kitchen.AppHost.csproj reference Kitchen.Api/Kitchen.Api.csproj Kitchen.Web/Kitchen.Web.csproj 2>&1)",
+      "Bash(cd D:/GitHub/KitchenCopilot && dotnet add Kitchen.AppHost/Kitchen.AppHost.csproj package CommunityToolkit.Aspire.Hosting.Ollama 2>&1 && dotnet add Kitchen.AppHost/Kitchen.AppHost.csproj package Aspire.Hosting.PostgreSQL 2>&1)",
+      "Bash(cd D:/GitHub/KitchenCopilot && dotnet add Kitchen.Api/Kitchen.Api.csproj package Aspire.Npgsql.EntityFrameworkCore.PostgreSQL 2>&1 | tail -5 && dotnet add Kitchen.Api/Kitchen.Api.csproj package Pgvector.EntityFrameworkCore 2>&1 | tail -5 && dotnet add Kitchen.Api/Kitchen.Api.csproj package Microsoft.SemanticKernel 2>&1 | tail -5)",
+      "Bash(cd D:/GitHub/KitchenCopilot && dotnet add Kitchen.Api/Kitchen.Api.csproj package Microsoft.SemanticKernel.Connectors.Ollama --prerelease 2>&1 | tail -5 && dotnet add Kitchen.Api/Kitchen.Api.csproj package Microsoft.EntityFrameworkCore.Design 2>&1 | tail -5 && dotnet add Kitchen.Web/Kitchen.Web.csproj package Microsoft.AspNetCore.SignalR.Client 2>&1 | tail -5)",
+      "Bash(cat >> D:/GitHub/KitchenCopilot/Kitchen.Web/wwwroot/css/app.css << 'EOF'\n\n/* ===== Kitchen Dark Theme ===== */\n:root {\n    --bg: #0F172A;\n    --surface: #1E293B;\n    --accent: #10B981;\n    --accent-dark: #059669;\n    --text: #F1F5F9;\n    --muted: #94A3B8;\n    --radius: 8px;\n}\n\nbody { background: var\\(--bg\\); color: var\\(--text\\); }\n\n.kitchen-layout {\n    max-width: 900px;\n    margin: 0 auto;\n    padding: 1.5rem;\n}\n\n.kitchen-header { text-align: center; margin-bottom: 2rem; }\n.kitchen-header h1 { color: var\\(--accent\\); font-size: 2.4rem; margin: 0; }\n.kitchen-header p  { color: var\\(--muted\\); margin-top: .5rem; }\n\n.kitchen-main { display: flex; flex-direction: column; gap: 2rem; }\n\n/* Buttons */\n.btn-primary, .btn-secondary, .btn-accent {\n    padding: .6rem 1.4rem;\n    border: none;\n    border-radius: var\\(--radius\\);\n    cursor: pointer;\n    font-size: 1rem;\n    transition: background .2s;\n}\n.btn-primary  { background: var\\(--accent\\); color: #fff; }\n.btn-primary:hover  { background: var\\(--accent-dark\\); }\n.btn-secondary { background: var\\(--surface\\); color: var\\(--text\\); border: 1px solid #334155; }\n.btn-accent { background: var\\(--accent\\); color: #fff; margin-top: 1rem; }\n\n/* Fridge scan */\n.fridge-scan { background: var\\(--surface\\); border-radius: var\\(--radius\\); padding: 1.5rem; }\n.fridge-scan h2 { color: var\\(--accent\\); margin-top: 0; }\n.capture-controls { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem; }\n.status { color: var\\(--muted\\); font-style: italic; }\n\n/* Ingredient chips */\n.ingredient-chips { display: flex; flex-wrap: wrap; gap: .5rem; margin: 1rem 0; }\n.chip {\n    background: #0D3D2E;\n    border: 1px solid var\\(--accent\\);\n    color: var\\(--accent\\);\n    border-radius: 999px;\n    padding: .3rem .8rem;\n    font-size: .9rem;\n}\n.chip small { color: var\\(--muted\\); margin-left: .3rem; }\n\n/* Recipe display */\n.recipe-display { background: var\\(--surface\\); border-radius: var\\(--radius\\); padding: 1.5rem; min-height: 120px; }\n.streaming-indicator { color: var\\(--accent\\); font-style: italic; margin-bottom: 1rem; }\n.recipe-content { line-height: 1.7; }\n.recipe-content h2 { color: var\\(--accent\\); }\n.placeholder { color: var\\(--muted\\); font-style: italic; }\nEOF)",
+      "Bash(cd D:/GitHub/KitchenCopilot && dotnet build --no-restore 2>&1 | tail -30)",
+      "Bash(for f:*)",
+      "Bash(cd D:/GitHub/KitchenCopilot && dotnet restore 2>&1 | tail -15)",
+      "Bash(cd D:/GitHub/KitchenCopilot && dotnet build 2>&1 | grep -E \"\\(error|warning|Build succeeded|Build FAILED\\)\" | head -30)",
+      "Bash(dotnet workload:*)",
+      "Bash(cd D:/GitHub/KitchenCopilot && dotnet restore Kitchen.Api/Kitchen.Api.csproj 2>&1 | tail -5)",
+      "Bash(cd D:/GitHub/KitchenCopilot && dotnet build Kitchen.Api/Kitchen.Api.csproj 2>&1 | grep -E \"\\(error|warning CS|Build succeeded|Build FAILED\\)\" | head -20)",
+      "Bash(cd D:/GitHub/KitchenCopilot && dotnet build Kitchen.Api/Kitchen.Api.csproj 2>&1 | grep -E \"\\(error CS|Build succeeded|Build FAILED\\)\" | head -20)",
+      "Bash(cd D:/GitHub/KitchenCopilot && dotnet build Kitchen.Shared/Kitchen.Shared.csproj Kitchen.Api/Kitchen.Api.csproj Kitchen.AppHost/Kitchen.AppHost.csproj 2>&1 | grep -E \"\\(error CS|Build succeeded|Build FAILED|error MSB\\)\" | head -20)",
+      "Bash(cd D:/GitHub/KitchenCopilot && dotnet build Kitchen.Api/Kitchen.Api.csproj 2>&1 | grep -E \"\\(error CS|Build succeeded|Build FAILED\\)\" && dotnet build Kitchen.AppHost/Kitchen.AppHost.csproj 2>&1 | grep -E \"\\(error CS|Build succeeded|Build FAILED\\)\")",
+      "Bash(cd D:/GitHub/KitchenCopilot && dotnet build Kitchen.AppHost/Kitchen.AppHost.csproj 2>&1 | grep -E \"error\" | head -15)",
+      "Bash(cd D:/GitHub/KitchenCopilot && dotnet build Kitchen.Api/Kitchen.Api.csproj Kitchen.Shared/Kitchen.Shared.csproj 2>&1 | grep -E \"\\(Build succeeded|Build FAILED|error CS\\)\" | head -10)",
+      "Bash(cd D:/GitHub/KitchenCopilot && dotnet build Kitchen.Api/Kitchen.Api.csproj 2>&1 | tail -3 && dotnet build Kitchen.Shared/Kitchen.Shared.csproj 2>&1 | tail -3)",
+      "Bash(Get-Process -Name \"msiexec\" 2>&1 || tasklist /fi \"imagename eq msiexec.exe\" 2>&1)",
+      "Bash(tasklist 2>&1 | grep -i \"msiexec\\\\|setup\\\\|installer\\\\|vs_\\\\|visualstudio\")",
+      "Bash(tasklist 2>&1 | grep -i \"msiexec\" && dotnet workload install wasm-tools-net10 2>&1 | tail -8)",
+      "Bash(cd D:/GitHub/KitchenCopilot && dotnet build 2>&1 | grep -E \"\\(error CS|error NETSDK|error MSB|Build succeeded|Build FAILED\\)\" | head -20)",
+      "Bash(cd D:/GitHub/KitchenCopilot && dotnet build 2>&1 | grep -E \"\\(error CS|error NETSDK|Build succeeded|Build FAILED\\)\" | head -20)"
+    ]
+  }
+}

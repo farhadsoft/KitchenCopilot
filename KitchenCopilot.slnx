@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="Kitchen.Api/Kitchen.Api.csproj" />
+  <Project Path="Kitchen.AppHost/Kitchen.AppHost.csproj" />
+  <Project Path="Kitchen.ServiceDefaults/Kitchen.ServiceDefaults.csproj" />
+  <Project Path="Kitchen.Shared/Kitchen.Shared.csproj" />
+  <Project Path="Kitchen.Web/Kitchen.Web.csproj" />
+</Solution>

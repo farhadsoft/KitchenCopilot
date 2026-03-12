@@ -1,0 +1,70 @@
+@using Kitchen.Shared.Models
+@using Kitchen.Web.Services
+@inject RecipeStreamService RecipeStream
+@implements IAsyncDisposable
+
+<div class="recipe-display">
+    @if (_streaming)
+    {
+        <div class="streaming-indicator">Chef is thinking...</div>
+    }
+
+    @if (!string.IsNullOrEmpty(_recipe))
+    {
+        <div class="recipe-content">
+            @((MarkupString)_recipe)
+        </div>
+    }
+    else if (!_streaming)
+    {
+        <p class="placeholder">Your recipe will appear here.</p>
+    }
+</div>
+
+@code {
+    [Parameter] public List<Ingredient> Ingredients { get; set; } = [];
+    [Parameter] public bool Trigger { get; set; }
+
+    private string _recipe = string.Empty;
+    private bool _streaming;
+    private CancellationTokenSource _cts = new();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (Trigger && Ingredients.Count > 0)
+            await StartStreamingAsync();
+    }
+
+    private async Task StartStreamingAsync()
+    {
+        await _cts.CancelAsync();
+        _cts = new CancellationTokenSource();
+        _recipe = string.Empty;
+        _streaming = true;
+
+        var sb = new System.Text.StringBuilder();
+        var request = new RecipeRequest(Ingredients);
+
+        try
+        {
+            await foreach (var token in RecipeStream.StreamAsync(request, _cts.Token))
+            {
+                sb.Append(System.Net.WebUtility.HtmlEncode(token));
+                _recipe = sb.ToString().Replace("\n", "<br/>");
+                StateHasChanged();
+            }
+        }
+        catch (OperationCanceledException) { }
+        finally
+        {
+            _streaming = false;
+            StateHasChanged();
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await _cts.CancelAsync();
+        _cts.Dispose();
+    }
+}

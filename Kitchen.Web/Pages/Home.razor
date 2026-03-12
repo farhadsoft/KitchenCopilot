@@ -1,0 +1,39 @@
+@page "/"
+@using Kitchen.Shared.Models
+@using Kitchen.Web.Components
+@using Kitchen.Web.Components.Vision
+
+<PageTitle>Kitchen Copilot</PageTitle>
+
+<div class="kitchen-layout">
+    <header class="kitchen-header">
+        <h1>Kitchen Copilot</h1>
+        <p>Scan your fridge, get a recipe instantly.</p>
+    </header>
+
+    <main class="kitchen-main">
+        <FridgeScan
+            OnIngredientsDetected="HandleIngredients"
+            OnGenerateClicked="TriggerGeneration" />
+
+        <RecipeDisplay
+            Ingredients="_ingredients"
+            Trigger="_generateTrigger" />
+    </main>
+</div>
+
+@code {
+    private List<Ingredient> _ingredients = [];
+    private bool _generateTrigger;
+
+    private void HandleIngredients(List<Ingredient> ingredients)
+    {
+        _ingredients = ingredients;
+        _generateTrigger = false; // reset so a new trigger fires
+    }
+
+    private void TriggerGeneration()
+    {
+        _generateTrigger = true;
+    }
+}
