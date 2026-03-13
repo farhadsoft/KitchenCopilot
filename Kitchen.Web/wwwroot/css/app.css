@@ -1,23 +1,24 @@
-/* ===== iOS Design System — Kitchen Copilot ===== */
+/* ===== Kitchen Copilot — Modern Culinary Design System ===== */
 
 /* Design Tokens */
 :root {
-    --ios-bg:        #000000;
-    --ios-bg2:       #1C1C1E;
-    --ios-bg3:       #2C2C2E;
-    --ios-separator: rgba(84,84,88,0.65);
-    --ios-label:     #FFFFFF;
-    --ios-label2:    rgba(235,235,245,0.6);
-    --ios-label3:    rgba(235,235,245,0.3);
-    --ios-green:     #34C759;
-    --ios-green-dark:#248A3D;
-    --ios-blue:      #007AFF;
-    --ios-fill:      rgba(120,120,128,0.2);
-    --ios-radius-sm: 10px;
-    --ios-radius-md: 14px;
-    --ios-radius-lg: 20px;
-    --ios-radius-xl: 28px;
-    --ios-tab-height: 83px;
+    --kc-bg:          #F3F7F4;
+    --kc-card:        #FFFFFF;
+    --kc-primary:     #2D9B67;
+    --kc-primary-dk:  #1F7A50;
+    --kc-text:        #1A2E22;
+    --kc-text-2:      #718577;
+    --kc-border:      #DCE9E1;
+    --kc-error:       #DC3545;
+    --kc-fill:        rgba(45,155,103,0.10);
+    --kc-radius-sm:   10px;
+    --kc-radius-md:   14px;
+    --kc-radius-lg:   20px;
+    --kc-radius-pill: 999px;
+    --kc-shadow:      0 2px 16px rgba(26,46,34,0.08);
+    --kc-tab-height:  72px;
+    --font-display:   'Fraunces', Georgia, serif;
+    --font-body:      'DM Sans', system-ui, sans-serif;
 }
 
 /* Base Reset */
@@ -26,11 +27,11 @@
 html, body {
     margin: 0;
     padding: 0;
-    background: var(--ios-bg);
-    color: var(--ios-label);
-    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', system-ui, sans-serif;
-    font-size: 17px;
-    line-height: 1.47;
+    background: var(--kc-bg);
+    color: var(--kc-text);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.55;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     overscroll-behavior: none;
@@ -38,299 +39,413 @@ html, body {
 
 h1:focus { outline: none; }
 
-/* Typography Scale */
-.ios-large-title {
-    font-size: 34px;
+/* ── Typography ── */
+.kc-display-title {
+    font-family: var(--font-display);
+    font-size: 36px;
     font-weight: 700;
-    letter-spacing: 0.37px;
-    color: var(--ios-label);
+    color: var(--kc-text);
     margin: 0;
+    line-height: 1.15;
 }
 
-.ios-title1 {
-    font-size: 28px;
-    font-weight: 700;
-    color: var(--ios-label);
-    margin: 0;
-}
-
-.ios-title2 {
+.kc-title {
+    font-family: var(--font-display);
     font-size: 22px;
-    font-weight: 700;
-    color: var(--ios-label);
+    font-weight: 600;
+    color: var(--kc-text);
     margin: 0;
 }
 
-.ios-body {
-    font-size: 17px;
-    font-weight: 400;
-    color: var(--ios-label);
-}
-
-.ios-subhead {
+.kc-subtitle {
     font-size: 15px;
     font-weight: 400;
-    color: var(--ios-label2);
+    color: var(--kc-text-2);
+    margin: 0;
 }
 
-.ios-caption {
+.kc-label {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--kc-text);
+}
+
+.kc-caption {
     font-size: 12px;
     font-weight: 400;
-    color: var(--ios-label3);
+    color: var(--kc-text-2);
 }
 
-.ios-section-header {
-    font-size: 12px;
-    font-weight: 600;
+.kc-section-header {
+    font-size: 11px;
+    font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
-    color: var(--ios-label3);
-    padding: 0 4px 8px 4px;
+    letter-spacing: 0.8px;
+    color: var(--kc-text-2);
+    padding: 0 2px 8px 2px;
+    margin: 0;
 }
 
-/* Cards */
-.ios-card {
-    background: var(--ios-bg3);
-    border-radius: var(--ios-radius-lg);
-    padding: 20px;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.4);
+/* ── Cards ── */
+.kc-card {
+    background: var(--kc-card);
+    border-radius: var(--kc-radius-lg);
+    padding: 24px;
+    box-shadow: var(--kc-shadow);
+    border: 1px solid var(--kc-border);
+    animation: kc-fade-up 0.4s ease both;
 }
 
-.ios-card + .ios-card {
+.kc-card + .kc-card {
     margin-top: 16px;
+    animation-delay: 0.08s;
 }
 
-/* Buttons */
-.ios-btn-primary {
+@keyframes kc-fade-up {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Buttons ── */
+.kc-btn-primary {
     display: flex;
     align-items: center;
     justify-content: center;
+    gap: 6px;
     width: 100%;
-    padding: 16px 24px;
-    background: var(--ios-green);
+    padding: 14px 24px;
+    background: var(--kc-primary);
     color: #fff;
-    font-size: 17px;
+    font-family: var(--font-body);
+    font-size: 16px;
     font-weight: 600;
     border: none;
-    border-radius: var(--ios-radius-xl);
+    border-radius: var(--kc-radius-pill);
     cursor: pointer;
-    transition: transform 0.2s ease, opacity 0.2s ease, background 0.2s ease;
+    transition: background 0.18s ease, transform 0.15s ease, box-shadow 0.18s ease;
     text-decoration: none;
     -webkit-tap-highlight-color: transparent;
+    box-shadow: 0 4px 14px rgba(45,155,103,0.30);
 }
 
-.ios-btn-primary:hover { background: var(--ios-green-dark); }
-.ios-btn-primary:active { transform: scale(0.97); opacity: 0.85; }
-.ios-btn-primary:disabled {
-    opacity: 0.4;
+.kc-btn-primary:hover  { background: var(--kc-primary-dk); box-shadow: 0 4px 18px rgba(45,155,103,0.40); }
+.kc-btn-primary:active { transform: scale(0.97); }
+.kc-btn-primary:disabled {
+    opacity: 0.45;
     cursor: not-allowed;
     transform: none;
+    box-shadow: none;
 }
 
-.ios-btn-secondary {
+.kc-btn-secondary {
     display: flex;
     align-items: center;
     justify-content: center;
+    gap: 6px;
     width: 100%;
-    padding: 16px 24px;
-    background: var(--ios-fill);
-    color: var(--ios-label);
-    font-size: 17px;
+    padding: 14px 24px;
+    background: var(--kc-fill);
+    color: var(--kc-primary);
+    font-family: var(--font-body);
+    font-size: 16px;
     font-weight: 600;
-    border: none;
-    border-radius: var(--ios-radius-xl);
+    border: 1.5px solid rgba(45,155,103,0.25);
+    border-radius: var(--kc-radius-pill);
     cursor: pointer;
-    transition: transform 0.2s ease, opacity 0.2s ease;
+    transition: background 0.18s ease, transform 0.15s ease;
     text-decoration: none;
     -webkit-tap-highlight-color: transparent;
 }
 
-.ios-btn-secondary:active { transform: scale(0.97); opacity: 0.85; }
-.ios-btn-secondary:disabled { opacity: 0.4; cursor: not-allowed; }
+.kc-btn-secondary:hover  { background: rgba(45,155,103,0.16); }
+.kc-btn-secondary:active { transform: scale(0.97); }
+.kc-btn-secondary:disabled { opacity: 0.45; cursor: not-allowed; }
 
-/* Chips */
-.ios-chip {
+.kc-btn-icon {
     display: inline-flex;
     align-items: center;
-    gap: 4px;
-    background: rgba(52,199,89,0.15);
-    border: 1px solid rgba(52,199,89,0.35);
-    color: var(--ios-green);
-    border-radius: 999px;
-    padding: 5px 12px;
-    font-size: 14px;
-    font-weight: 500;
-}
-
-.ios-chip small {
-    color: var(--ios-label3);
-    font-size: 12px;
-}
-
-/* List items */
-.ios-list-item {
-    display: flex;
-    align-items: center;
-    padding: 12px 16px;
-    background: var(--ios-bg3);
-    border-bottom: 1px solid var(--ios-separator);
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: var(--kc-fill);
+    color: var(--kc-primary);
+    border: none;
+    border-radius: var(--kc-radius-sm);
     cursor: pointer;
-    transition: opacity 0.15s ease;
+    font-size: 18px;
+    transition: background 0.15s ease;
     -webkit-tap-highlight-color: transparent;
 }
+.kc-btn-icon:hover { background: rgba(45,155,103,0.18); }
 
-.ios-list-item:first-child { border-radius: var(--ios-radius-md) var(--ios-radius-md) 0 0; }
-.ios-list-item:last-child  { border-radius: 0 0 var(--ios-radius-md) var(--ios-radius-md); border-bottom: none; }
-.ios-list-item:active { opacity: 0.6; }
-
-/* Frosted glass */
-.ios-frosted {
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
-    background: rgba(28,28,30,0.85);
-}
-
-/* Streaming indicator */
-.ios-streaming-indicator {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    color: var(--ios-label2);
-    font-size: 15px;
-    margin-bottom: 16px;
-}
-
-.ios-pulse-dot {
-    width: 8px;
-    height: 8px;
-    background: var(--ios-green);
-    border-radius: 50%;
-    flex-shrink: 0;
-    animation: ios-pulse 1.4s ease-in-out infinite;
-}
-
-@keyframes ios-pulse {
-    0%   { transform: scale(1);   opacity: 1; }
-    50%  { transform: scale(1.5); opacity: 0.5; }
-    100% { transform: scale(1);   opacity: 1; }
-}
-
-/* Divider */
-.ios-divider {
-    height: 1px;
-    background: var(--ios-separator);
-    margin: 16px 0;
-}
-
-/* Ingredient chips container */
-.ios-chips {
+/* ── Chips ── */
+.kc-chips {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
     margin: 12px 0;
 }
 
-/* Recipe content typography */
-.ios-recipe-content {
-    font-size: 17px;
-    line-height: 1.6;
-    color: var(--ios-label);
+.kc-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(45,155,103,0.08);
+    border: 1.5px solid rgba(45,155,103,0.30);
+    color: var(--kc-primary-dk);
+    border-radius: var(--kc-radius-pill);
+    padding: 5px 13px;
+    font-size: 13px;
+    font-weight: 500;
 }
 
-.ios-recipe-content h2 {
+.kc-chip small {
+    color: var(--kc-text-2);
+    font-size: 11px;
+}
+
+/* ── Form inputs ── */
+.kc-input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.kc-input {
+    width: 100%;
+    padding: 12px 16px;
+    font-family: var(--font-body);
+    font-size: 16px;
+    color: var(--kc-text);
+    background: var(--kc-card);
+    border: 1.5px solid var(--kc-border);
+    border-radius: var(--kc-radius-md);
+    outline: none;
+    transition: border-color 0.18s ease, box-shadow 0.18s ease;
+}
+.kc-input:focus {
+    border-color: var(--kc-primary);
+    box-shadow: 0 0 0 3px rgba(45,155,103,0.15);
+}
+
+/* ── Status / streaming ── */
+.kc-streaming-indicator {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--kc-text-2);
+    font-size: 14px;
+    margin-bottom: 16px;
+}
+
+.kc-pulse-dot {
+    width: 8px;
+    height: 8px;
+    background: var(--kc-primary);
+    border-radius: 50%;
+    flex-shrink: 0;
+    animation: kc-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes kc-pulse {
+    0%   { transform: scale(1);   opacity: 1; }
+    50%  { transform: scale(1.55); opacity: 0.45; }
+    100% { transform: scale(1);   opacity: 1; }
+}
+
+.kc-divider {
+    height: 1px;
+    background: var(--kc-border);
+    margin: 16px 0;
+}
+
+.kc-placeholder {
+    color: var(--kc-text-2);
+    font-style: italic;
+    text-align: center;
+    padding: 24px 0;
+    font-size: 15px;
+}
+
+.kc-error {
+    color: var(--kc-error);
+    font-size: 14px;
+    padding: 10px 0;
+}
+
+/* ── Camera feed ── */
+.kc-camera-feed {
+    width: 100%;
+    border-radius: var(--kc-radius-lg);
+    display: block;
+    background: #1A2E22;
+    border: 1px solid var(--kc-border);
+}
+
+/* ── Recipe content ── */
+.kc-recipe-content {
+    font-size: 16px;
+    line-height: 1.65;
+    color: var(--kc-text);
+}
+
+.kc-recipe-content h2 {
+    font-family: var(--font-display);
     font-size: 22px;
-    font-weight: 700;
-    color: var(--ios-green);
+    font-weight: 600;
+    color: var(--kc-primary-dk);
     margin: 20px 0 8px 0;
 }
 
-.ios-recipe-content h3 {
-    font-size: 17px;
+.kc-recipe-content h3 {
+    font-size: 16px;
     font-weight: 600;
-    color: var(--ios-label);
+    color: var(--kc-text);
     margin: 16px 0 6px 0;
 }
 
-.ios-recipe-content p {
+.kc-recipe-content p {
     margin: 0 0 12px 0;
-    color: var(--ios-label);
+    color: var(--kc-text);
 }
 
-.ios-recipe-content ul, .ios-recipe-content ol {
+.kc-recipe-content ul, .kc-recipe-content ol {
     padding-left: 20px;
     margin: 8px 0 12px 0;
 }
 
-.ios-recipe-content li {
-    margin-bottom: 4px;
-    color: var(--ios-label);
+.kc-recipe-content li {
+    margin-bottom: 5px;
+    color: var(--kc-text);
 }
 
-.ios-error {
-    color: #F87171;
-    font-size: 0.9rem;
-    padding: 12px 0;
+/* ── App shell ── */
+.kc-app-shell {
+    display: flex;
+    flex-direction: column;
+    min-height: 100dvh;
+    background: var(--kc-bg);
 }
 
-.ios-placeholder {
-    color: var(--ios-label3);
-    font-style: italic;
-    text-align: center;
-    padding: 24px 0;
+.kc-content {
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: calc(var(--kc-tab-height) + env(safe-area-inset-bottom, 0px));
 }
 
-/* Camera / video */
-.ios-camera-feed {
-    width: 100%;
-    border-radius: var(--ios-radius-lg);
-    display: block;
-    background: #000;
+/* ── Page layout ── */
+.kc-page {
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 0 16px;
 }
 
-/* Control row */
-.ios-control-row {
+.kc-page-header {
+    padding: 52px 0 20px 0;
+}
+
+.kc-page-body {
+    padding-bottom: 24px;
+}
+
+/* ── Control row ── */
+.kc-control-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 12px;
     margin-bottom: 16px;
 }
 
-/* Blazor error UI */
+/* ── Tab bar ── */
+.kc-tab-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: calc(var(--kc-tab-height) + env(safe-area-inset-bottom, 0px));
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border-top: 1px solid var(--kc-border);
+    z-index: 100;
+}
+
+.kc-tab-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    flex: 1;
+    height: 100%;
+    text-decoration: none;
+    color: var(--kc-text-2);
+    padding: 8px 4px;
+    transition: color 0.15s ease;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.kc-tab-item.active,
+.kc-tab-item:global(.active) {
+    color: var(--kc-primary);
+}
+
+.kc-tab-icon {
+    font-size: 22px;
+    line-height: 1;
+}
+
+.kc-tab-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+}
+
+/* ── Blazor error UI ── */
 #blazor-error-ui {
     color-scheme: light only;
-    background: #1C1C1E;
-    color: #fff;
-    border-top: 1px solid var(--ios-separator);
+    background: var(--kc-card);
+    color: var(--kc-text);
+    border-top: 1px solid var(--kc-border);
+    box-shadow: 0 -4px 20px rgba(26,46,34,0.10);
     bottom: 0;
     box-sizing: border-box;
     display: none;
     left: 0;
-    padding: 0.75rem 1.25rem;
+    padding: 0.85rem 1.25rem;
     position: fixed;
     width: 100%;
     z-index: 9999;
     font-size: 15px;
+    border-radius: var(--kc-radius-lg) var(--kc-radius-lg) 0 0;
 }
 
 #blazor-error-ui .dismiss {
     cursor: pointer;
     position: absolute;
     right: 0.75rem;
-    top: 0.5rem;
+    top: 0.6rem;
+    color: var(--kc-text-2);
 }
 
 .blazor-error-boundary {
-    background: #3A1C1C;
+    background: #FFF0F0;
+    border: 1px solid #FBCDD0;
     padding: 1rem 1rem 1rem 3.7rem;
-    color: white;
-    border-radius: var(--ios-radius-md);
+    color: var(--kc-error);
+    border-radius: var(--kc-radius-md);
 }
 
 .blazor-error-boundary::after {
     content: "An error has occurred.";
 }
 
-/* Loading progress (WASM boot) */
+/* ── Loading progress (WASM boot) ── */
 .loading-progress {
     position: absolute;
     display: block;
@@ -342,14 +457,14 @@ h1:focus { outline: none; }
 
 .loading-progress circle {
     fill: none;
-    stroke: rgba(120,120,128,0.2);
+    stroke: var(--kc-border);
     stroke-width: 0.6rem;
     transform-origin: 50% 50%;
     transform: rotate(-90deg);
 }
 
 .loading-progress circle:last-child {
-    stroke: #34C759;
+    stroke: var(--kc-primary);
     stroke-dasharray: calc(3.141 * var(--blazor-load-percentage, 0%) * 0.8), 500%;
     transition: stroke-dasharray 0.05s ease-in-out;
 }
@@ -358,17 +473,18 @@ h1:focus { outline: none; }
     position: absolute;
     text-align: center;
     font-weight: 600;
-    color: rgba(235,235,245,0.6);
+    color: var(--kc-text-2);
     inset: calc(20vh + 3.25rem) 0 auto 0.2rem;
+    font-family: var(--font-body);
 }
 
 .loading-progress-text::after {
     content: var(--blazor-load-percentage-text, "Loading");
 }
 
-/* Form validation (keep Blazor defaults working) */
-.valid.modified:not([type=checkbox]) { outline: 1px solid var(--ios-green); }
-.invalid { outline: 1px solid #FF3B30; }
-.validation-message { color: #FF3B30; font-size: 14px; }
+/* ── Form validation ── */
+.valid.modified:not([type=checkbox]) { outline: 1.5px solid var(--kc-primary); }
+.invalid { outline: 1.5px solid var(--kc-error); }
+.validation-message { color: var(--kc-error); font-size: 13px; }
 
-code { color: #FF6B6B; }
+code { color: var(--kc-primary-dk); background: rgba(45,155,103,0.08); padding: 1px 5px; border-radius: 4px; }

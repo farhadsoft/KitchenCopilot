@@ -3,28 +3,28 @@
 @inject BrowserLlmService LlmService
 @implements IAsyncDisposable
 
-<div class="ios-card">
+<div class="kc-card">
     @if (_streaming)
     {
-        <div class="ios-streaming-indicator">
-            <span class="ios-pulse-dot"></span>
+        <div class="kc-streaming-indicator">
+            <span class="kc-pulse-dot"></span>
             Chef is thinking…
         </div>
     }
 
     @if (_error is not null)
     {
-        <p class="ios-error">⚠ @_error</p>
+        <p class="kc-error">⚠ @_error</p>
     }
     else if (!string.IsNullOrEmpty(_recipe))
     {
-        <div class="ios-recipe-content">
+        <div class="kc-recipe-content">
             @((MarkupString)_recipe)
         </div>
     }
     else if (!_streaming)
     {
-        <p class="ios-placeholder">Your recipe will appear here.</p>
+        <p class="kc-placeholder">Your recipe will appear here.</p>
     }
 </div>
 

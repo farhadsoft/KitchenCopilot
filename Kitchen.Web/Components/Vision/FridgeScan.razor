@@ -3,46 +3,46 @@
 @inject YoloInferenceService YoloService
 @inject IJSRuntime JS
 
-<div class="ios-card">
-    <h2 class="ios-title2" style="margin-bottom:16px;">Scan Your Fridge</h2>
+<div class="kc-card">
+    <h2 class="kc-title" style="margin-bottom:16px;">Scan Your Fridge</h2>
 
-    <div class="ios-control-row">
-        <label class="ios-btn-primary" style="cursor:pointer;">
+    <div class="kc-control-row">
+        <label class="kc-btn-primary" style="cursor:pointer;">
             📷 Upload Photo
             <InputFile OnChange="OnFileSelected" accept="image/*" style="display:none" />
         </label>
-        <button class="ios-btn-secondary" @onclick="StartCamera" disabled="@_cameraActive">
+        <button class="kc-btn-secondary" @onclick="StartCamera" disabled="@_cameraActive">
             🎥 Camera
         </button>
     </div>
 
     @if (_cameraActive)
     {
-        <video id="camera-feed" autoplay playsinline class="ios-camera-feed" style="margin-bottom:12px;"></video>
-        <button class="ios-btn-primary" @onclick="CaptureFrame">Capture</button>
+        <video id="camera-feed" autoplay playsinline class="kc-camera-feed" style="margin-bottom:12px;"></video>
+        <button class="kc-btn-primary" @onclick="CaptureFrame">Capture</button>
     }
 
     <canvas id="image-canvas" hidden></canvas>
 
     @if (_loading)
     {
-        <div class="ios-streaming-indicator" style="margin-top:12px;">
-            <span class="ios-pulse-dot"></span>
+        <div class="kc-streaming-indicator" style="margin-top:12px;">
+            <span class="kc-pulse-dot"></span>
             Detecting ingredients…
         </div>
     }
 
     @if (DetectedIngredients.Count > 0)
     {
-        <div class="ios-divider"></div>
-        <p class="ios-section-header">Detected Ingredients</p>
-        <div class="ios-chips">
+        <div class="kc-divider"></div>
+        <p class="kc-section-header">Detected Ingredients</p>
+        <div class="kc-chips">
             @foreach (var ing in DetectedIngredients)
             {
-                <span class="ios-chip">@ing.Name <small>@(ing.Confidence.ToString("P0"))</small></span>
+                <span class="kc-chip">@ing.Name <small>@(ing.Confidence.ToString("P0"))</small></span>
             }
         </div>
-        <button class="ios-btn-primary" style="margin-top:8px;" @onclick="OnGenerateRecipe">
+        <button class="kc-btn-primary" style="margin-top:8px;" @onclick="OnGenerateRecipe">
             ✨ Generate Recipe
         </button>
     }
@@ -78,6 +78,7 @@
     {
         _cameraActive = true;
         StateHasChanged();
+        await Task.Yield(); // wait for Blazor to render the <video> element before calling JS
         await JS.InvokeVoidAsync("kitchenCamera.start", "camera-feed");
     }
 

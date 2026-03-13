@@ -17,6 +17,15 @@ async function loadModel() {
     console.log('[ORT] YOLO26 model loaded. Inputs:', session.inputNames);
 }
 
+function iou(a, b) {
+    const ax1 = a.cx - a.w / 2, ay1 = a.cy - a.h / 2, ax2 = a.cx + a.w / 2, ay2 = a.cy + a.h / 2;
+    const bx1 = b.cx - b.w / 2, by1 = b.cy - b.h / 2, bx2 = b.cx + b.w / 2, by2 = b.cy + b.h / 2;
+    const ix1 = Math.max(ax1, bx1), iy1 = Math.max(ay1, by1);
+    const ix2 = Math.min(ax2, bx2), iy2 = Math.min(ay2, by2);
+    const inter = Math.max(0, ix2 - ix1) * Math.max(0, iy2 - iy1);
+    return inter / (a.w * a.h + b.w * b.h - inter);
+}
+
 /**
  * Runs YOLO26 inference on raw RGBA pixel data.
  * @param {number[]} rgbaPixels - Flat RGBA array from canvas.getImageData()
@@ -45,7 +54,7 @@ export async function runInference(rgbaPixels, width, height) {
     const numClasses = results[session.outputNames[0]].dims[1] - 4;
 
     const detections = [];
-    const confidenceThreshold = 0.35;
+    const confidenceThreshold = 0.25;
 
     for (let i = 0; i < numAnchors; i++) {
         let maxScore = 0;
@@ -55,18 +64,24 @@ export async function runInference(rgbaPixels, width, height) {
             if (score > maxScore) { maxScore = score; maxClass = c; }
         }
         if (maxScore >= confidenceThreshold) {
-            detections.push({ label: COCO_CLASSES[maxClass] ?? `class_${maxClass}`, confidence: maxScore });
+            // cx, cy, w, h are the first 4 rows of the output tensor
+            const cx = output[0 * numAnchors + i];
+            const cy = output[1 * numAnchors + i];
+            const w  = output[2 * numAnchors + i];
+            const h  = output[3 * numAnchors + i];
+            detections.push({ label: COCO_CLASSES[maxClass] ?? `class_${maxClass}`, confidence: maxScore, cx, cy, w, h });
         }
     }
 
-    // Deduplicate by label, keep highest confidence
-    const byLabel = new Map();
+    // NMS: suppress boxes with IoU > 0.45 against a higher-confidence box of the same class
+    detections.sort((a, b) => b.confidence - a.confidence);
+    const kept = [];
     for (const d of detections) {
-        if (!byLabel.has(d.label) || byLabel.get(d.label).confidence < d.confidence)
-            byLabel.set(d.label, d);
+        const overlaps = kept.filter(k => k.label === d.label && iou(k, d) > 0.45);
+        if (overlaps.length === 0) kept.push(d);
     }
 
-    return [...byLabel.values()].sort((a, b) => b.confidence - a.confidence).slice(0, 20);
+    return kept.sort((a, b) => b.confidence - a.confidence).slice(0, 20);
 }
 
 // COCO class names (food-relevant subset shown first for clarity)
