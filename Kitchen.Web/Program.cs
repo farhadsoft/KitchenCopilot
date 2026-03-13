@@ -14,6 +14,6 @@ var apiBase = builder.Configuration["ApiBaseUrl"]
 
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(apiBase) });
 builder.Services.AddScoped<YoloInferenceService>();
-builder.Services.AddScoped<RecipeStreamService>();
+builder.Services.AddScoped<BrowserLlmService>();
 
 await builder.Build().RunAsync();

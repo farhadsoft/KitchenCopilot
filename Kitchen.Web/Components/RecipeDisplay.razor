@@ -1,23 +1,30 @@
 @using Kitchen.Shared.Models
 @using Kitchen.Web.Services
-@inject RecipeStreamService RecipeStream
+@inject BrowserLlmService LlmService
 @implements IAsyncDisposable
 
-<div class="recipe-display">
+<div class="ios-card">
     @if (_streaming)
     {
-        <div class="streaming-indicator">Chef is thinking...</div>
+        <div class="ios-streaming-indicator">
+            <span class="ios-pulse-dot"></span>
+            Chef is thinking…
+        </div>
     }
 
-    @if (!string.IsNullOrEmpty(_recipe))
+    @if (_error is not null)
     {
-        <div class="recipe-content">
+        <p class="ios-error">⚠ @_error</p>
+    }
+    else if (!string.IsNullOrEmpty(_recipe))
+    {
+        <div class="ios-recipe-content">
             @((MarkupString)_recipe)
         </div>
     }
     else if (!_streaming)
     {
-        <p class="placeholder">Your recipe will appear here.</p>
+        <p class="ios-placeholder">Your recipe will appear here.</p>
     }
 </div>
 
@@ -26,6 +33,7 @@
     [Parameter] public bool Trigger { get; set; }
 
     private string _recipe = string.Empty;
+    private string? _error;
     private bool _streaming;
     private CancellationTokenSource _cts = new();
 
@@ -40,14 +48,14 @@
         await _cts.CancelAsync();
         _cts = new CancellationTokenSource();
         _recipe = string.Empty;
+        _error = null;
         _streaming = true;
 
         var sb = new System.Text.StringBuilder();
-        var request = new RecipeRequest(Ingredients);
 
         try
         {
-            await foreach (var token in RecipeStream.StreamAsync(request, _cts.Token))
+            await foreach (var token in LlmService.StreamAsync(Ingredients, _cts.Token))
             {
                 sb.Append(System.Net.WebUtility.HtmlEncode(token));
                 _recipe = sb.ToString().Replace("\n", "<br/>");
@@ -55,6 +63,10 @@
             }
         }
         catch (OperationCanceledException) { }
+        catch (Exception ex)
+        {
+            _error = ex.Message;
+        }
         finally
         {
             _streaming = false;

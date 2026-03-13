@@ -1,11 +1,10 @@
 using Kitchen.Shared.Models;
 using Microsoft.AspNetCore.SignalR.Client;
-using Microsoft.AspNetCore.Components;
 using System.Runtime.CompilerServices;
 
 namespace Kitchen.Web.Services;
 
-public class RecipeStreamService(NavigationManager nav) : IAsyncDisposable
+public class RecipeStreamService(HttpClient http) : IAsyncDisposable
 {
     private HubConnection? _hub;
 
@@ -13,8 +12,9 @@ public class RecipeStreamService(NavigationManager nav) : IAsyncDisposable
     {
         if (_hub is null)
         {
+            var hubUrl = new Uri(http.BaseAddress!, "/hubs/recipe");
             _hub = new HubConnectionBuilder()
-                .WithUrl(nav.ToAbsoluteUri("/hubs/recipe"))
+                .WithUrl(hubUrl)
                 .WithAutomaticReconnect()
                 .Build();
         }

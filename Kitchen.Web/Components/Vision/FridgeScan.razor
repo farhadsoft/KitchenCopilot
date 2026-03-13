@@ -3,42 +3,48 @@
 @inject YoloInferenceService YoloService
 @inject IJSRuntime JS
 
-<div class="fridge-scan">
-    <h2>Scan Your Fridge</h2>
+<div class="ios-card">
+    <h2 class="ios-title2" style="margin-bottom:16px;">Scan Your Fridge</h2>
 
-    <div class="capture-controls">
-        <label class="btn-primary">
-            Upload Photo
+    <div class="ios-control-row">
+        <label class="ios-btn-primary" style="cursor:pointer;">
+            📷 Upload Photo
             <InputFile OnChange="OnFileSelected" accept="image/*" style="display:none" />
         </label>
-        <button class="btn-secondary" @onclick="StartCamera" disabled="@_cameraActive">
-            Use Camera
+        <button class="ios-btn-secondary" @onclick="StartCamera" disabled="@_cameraActive">
+            🎥 Camera
         </button>
     </div>
 
     @if (_cameraActive)
     {
-        <video id="camera-feed" autoplay playsinline style="width:100%;max-width:480px;border-radius:8px;"></video>
-        <button class="btn-primary" @onclick="CaptureFrame">Capture</button>
+        <video id="camera-feed" autoplay playsinline class="ios-camera-feed" style="margin-bottom:12px;"></video>
+        <button class="ios-btn-primary" @onclick="CaptureFrame">Capture</button>
     }
 
     <canvas id="image-canvas" hidden></canvas>
 
     @if (_loading)
     {
-        <p class="status">Detecting ingredients...</p>
+        <div class="ios-streaming-indicator" style="margin-top:12px;">
+            <span class="ios-pulse-dot"></span>
+            Detecting ingredients…
+        </div>
     }
 
     @if (DetectedIngredients.Count > 0)
     {
-        <div class="ingredient-chips">
+        <div class="ios-divider"></div>
+        <p class="ios-section-header">Detected Ingredients</p>
+        <div class="ios-chips">
             @foreach (var ing in DetectedIngredients)
             {
-                <span class="chip">@ing.Name <small>@(ing.Confidence.ToString("P0"))</small></span>
+                <span class="ios-chip">@ing.Name <small>@(ing.Confidence.ToString("P0"))</small></span>
             }
         </div>
-
-        <button class="btn-accent" @onclick="OnGenerateRecipe">Generate Recipe</button>
+        <button class="ios-btn-primary" style="margin-top:8px;" @onclick="OnGenerateRecipe">
+            ✨ Generate Recipe
+        </button>
     }
 </div>
 

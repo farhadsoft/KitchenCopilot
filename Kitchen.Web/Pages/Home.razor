@@ -5,13 +5,13 @@
 
 <PageTitle>Kitchen Copilot</PageTitle>
 
-<div class="kitchen-layout">
-    <header class="kitchen-header">
-        <h1>Kitchen Copilot</h1>
-        <p>Scan your fridge, get a recipe instantly.</p>
+<div class="ios-page">
+    <header class="ios-page-header">
+        <h1 class="ios-large-title">Kitchen Copilot</h1>
+        <p class="ios-subhead">Scan your fridge, get a recipe instantly.</p>
     </header>
 
-    <main class="kitchen-main">
+    <div class="ios-page-body">
         <FridgeScan
             OnIngredientsDetected="HandleIngredients"
             OnGenerateClicked="TriggerGeneration" />
@@ -19,7 +19,7 @@
         <RecipeDisplay
             Ingredients="_ingredients"
             Trigger="_generateTrigger" />
-    </main>
+    </div>
 </div>
 
 @code {
@@ -29,7 +29,7 @@
     private void HandleIngredients(List<Ingredient> ingredients)
     {
         _ingredients = ingredients;
-        _generateTrigger = false; // reset so a new trigger fires
+        _generateTrigger = false;
     }
 
     private void TriggerGeneration()

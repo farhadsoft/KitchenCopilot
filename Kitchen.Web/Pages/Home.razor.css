@@ -1,0 +1,20 @@
+.ios-page {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 0 16px;
+}
+
+.ios-page-header {
+    padding: 20px 4px 12px 4px;
+}
+
+.ios-page-header .ios-subhead {
+    margin-top: 4px;
+}
+
+.ios-page-body {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding-bottom: 16px;
+}
