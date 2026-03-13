@@ -87,6 +87,7 @@
         _loading = true;
         _cameraActive = false;
         StateHasChanged();
+        JS.InvokeVoidAsync("kitchenCamera.stop"); // fire-and-forget; stop stream before capture
         try
         {
             var pixelData = await JS.InvokeAsync<PixelCapture>("kitchenCamera.capture", "camera-feed", "image-canvas");
