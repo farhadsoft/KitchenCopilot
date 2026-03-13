@@ -1,0 +1,29 @@
+server {
+    listen ${HTTP_PORTS};
+    server_name _;
+    root /usr/share/nginx/html;
+    index index.html;
+
+    # Required for WASM threads / SharedArrayBuffer
+    add_header Cross-Origin-Opener-Policy  "same-origin" always;
+    add_header Cross-Origin-Embedder-Policy "require-corp" always;
+
+    # Correct MIME type for .wasm files
+    types {
+        application/wasm wasm;
+    }
+    include /etc/nginx/mime.types;
+
+    # SPA fallback — all routes → index.html
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    # Cache immutable hashed assets aggressively
+    location ~* \.(js|css|wasm|woff2?|ttf|svg|png|ico)$ {
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+        add_header Cross-Origin-Opener-Policy  "same-origin" always;
+        add_header Cross-Origin-Embedder-Policy "require-corp" always;
+    }
+}

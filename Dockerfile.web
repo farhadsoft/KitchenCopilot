@@ -1,0 +1,25 @@
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+WORKDIR /src
+
+RUN dotnet workload install wasm-tools
+
+COPY global.json ./
+COPY Kitchen.Shared/Kitchen.Shared.csproj Kitchen.Shared/
+COPY Kitchen.Web/Kitchen.Web.csproj       Kitchen.Web/
+RUN dotnet restore Kitchen.Web/Kitchen.Web.csproj
+
+COPY Kitchen.Shared/ Kitchen.Shared/
+COPY Kitchen.Web/    Kitchen.Web/
+
+RUN dotnet publish Kitchen.Web/Kitchen.Web.csproj \
+    -c Release \
+    --no-restore \
+    -o /app/publish
+
+FROM nginx:1.27-alpine AS runtime
+
+COPY --from=build /app/publish/wwwroot /usr/share/nginx/html
+COPY docker/web/default.conf.template /etc/nginx/templates/default.conf.template
+
+ENV HTTP_PORTS=8080
+EXPOSE 8080

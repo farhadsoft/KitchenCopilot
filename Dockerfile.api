@@ -1,0 +1,22 @@
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+WORKDIR /src
+
+COPY global.json ./
+COPY Kitchen.Shared/Kitchen.Shared.csproj            Kitchen.Shared/
+COPY Kitchen.ServiceDefaults/Kitchen.ServiceDefaults.csproj Kitchen.ServiceDefaults/
+COPY Kitchen.Api/Kitchen.Api.csproj                  Kitchen.Api/
+RUN dotnet restore Kitchen.Api/Kitchen.Api.csproj
+
+COPY Kitchen.Shared/          Kitchen.Shared/
+COPY Kitchen.ServiceDefaults/ Kitchen.ServiceDefaults/
+COPY Kitchen.Api/             Kitchen.Api/
+
+RUN dotnet publish Kitchen.Api/Kitchen.Api.csproj \
+    -c Release \
+    --no-restore \
+    -o /app/publish
+
+FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
+WORKDIR /app
+COPY --from=build /app/publish .
+ENTRYPOINT ["dotnet", "Kitchen.Api.dll"]
