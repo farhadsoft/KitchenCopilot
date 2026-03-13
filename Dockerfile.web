@@ -1,6 +1,11 @@
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 
+# Python is required by Emscripten during wasm-tools native compilation
+RUN apt-get update && apt-get install -y --no-install-recommends python3 \
+    && ln -s /usr/bin/python3 /usr/bin/python \
+    && rm -rf /var/lib/apt/lists/*
+
 # Copy global.json first so the correct SDK band is active when installing workloads
 COPY global.json ./
 RUN dotnet workload install wasm-tools
@@ -12,13 +17,9 @@ RUN dotnet restore Kitchen.Web/Kitchen.Web.csproj
 COPY Kitchen.Shared/ Kitchen.Shared/
 COPY Kitchen.Web/    Kitchen.Web/
 
-# Diagnostics — visible in GHA build log
-RUN dotnet --version && dotnet workload list
-
 RUN dotnet publish Kitchen.Web/Kitchen.Web.csproj \
     -c Release \
-    -o /app/publish \
-    --verbosity detailed
+    -o /app/publish
 
 FROM nginx:1.27-alpine AS runtime
 
