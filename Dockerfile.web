@@ -1,9 +1,10 @@
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 
+# Copy global.json first so the correct SDK band is active when installing workloads
+COPY global.json ./
 RUN dotnet workload install wasm-tools
 
-COPY global.json ./
 COPY Kitchen.Shared/Kitchen.Shared.csproj Kitchen.Shared/
 COPY Kitchen.Web/Kitchen.Web.csproj       Kitchen.Web/
 RUN dotnet restore Kitchen.Web/Kitchen.Web.csproj
@@ -11,9 +12,9 @@ RUN dotnet restore Kitchen.Web/Kitchen.Web.csproj
 COPY Kitchen.Shared/ Kitchen.Shared/
 COPY Kitchen.Web/    Kitchen.Web/
 
+# Let publish run its own restore pass so workload SDK packages resolve correctly
 RUN dotnet publish Kitchen.Web/Kitchen.Web.csproj \
     -c Release \
-    --no-restore \
     -o /app/publish
 
 FROM nginx:1.27-alpine AS runtime
