@@ -35,7 +35,9 @@
       "Bash(dotnet script:*)",
       "Bash(find \"C:/Users/dev/.nuget/packages/aspire.npgsql\" -name \"*.dll\" 2>/dev/null | head -5)",
       "Bash(dotnet ilspy:*)",
-      "Bash(cd \"D:/GitHub/KitchenCopilot\" && dotnet ef migrations add InitialCreate --project Kitchen.Api --startup-project Kitchen.Api 2>&1)"
+      "Bash(cd \"D:/GitHub/KitchenCopilot\" && dotnet ef migrations add InitialCreate --project Kitchen.Api --startup-project Kitchen.Api 2>&1)",
+      "mcp__context7__resolve-library-id",
+      "mcp__context7__query-docs"
     ]
   }
 }

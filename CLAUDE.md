@@ -83,6 +83,11 @@ These names must match exactly between AppHost wiring and API connection string 
 
 The Blazor app resolves the API base URL from `ApiBaseUrl` config (set by Aspire) or falls back to `HostEnvironment.BaseAddress` for standalone dev.
 
+## Tooling Instructions
+
+- **Documentation:** Use the `mcp context7` MCP server whenever you need up-to-date library or framework documentation. Resolve the library ID first with `mcp__context7__resolve-library-id`, then fetch docs with `mcp__context7__query-docs`.
+- **Frontend design:** Use the `frontend-design` plugin whenever creating or significantly modifying UI/UX — components, layouts, colour usage, or CSS.
+
 ## Pending / Not Yet Implemented
 
 - `yolo26n.onnx` model file (NMS-free, INT8/Q4 quantized) — must be placed at `Kitchen.Web/wwwroot/models/yolo26n.onnx`

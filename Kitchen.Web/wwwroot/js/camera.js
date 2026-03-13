@@ -25,18 +25,18 @@ window.kitchenCamera = {
         return { rgba: Array.from(imageData.data), width: canvas.width, height: canvas.height };
     },
 
-    async decodeImage(imageBytes, canvasId) {
-        const blob = new Blob([new Uint8Array(imageBytes)]);
-        const url = URL.createObjectURL(blob);
-        const img = new Image();
-        await new Promise((res, rej) => { img.onload = res; img.onerror = rej; img.src = url; });
+    // imageBytes arrives as Uint8Array from Blazor WASM (.NET 7+ byte[] interop).
+    // Uses createImageBitmap — no img element, no blob URL, no DOM event loop needed.
+    async decodeImage(imageBytes, canvasId, mimeType) {
+        const bytes = imageBytes instanceof Uint8Array ? imageBytes : new Uint8Array(imageBytes);
+        const blob = new Blob([bytes], { type: mimeType || 'image/jpeg' });
+        const bitmap = await createImageBitmap(blob);
         const canvas = document.getElementById(canvasId);
-        canvas.width = img.naturalWidth;
-        canvas.height = img.naturalHeight;
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(img, 0, 0);
-        URL.revokeObjectURL(url);
-        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        canvas.width = bitmap.width;
+        canvas.height = bitmap.height;
+        canvas.getContext('2d').drawImage(bitmap, 0, 0);
+        bitmap.close();
+        const imageData = canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height);
         return { rgba: Array.from(imageData.data), width: canvas.width, height: canvas.height };
     }
 };
