@@ -12,10 +12,13 @@ RUN dotnet restore Kitchen.Web/Kitchen.Web.csproj
 COPY Kitchen.Shared/ Kitchen.Shared/
 COPY Kitchen.Web/    Kitchen.Web/
 
-# Let publish run its own restore pass so workload SDK packages resolve correctly
+# Diagnostics — visible in GHA build log
+RUN dotnet --version && dotnet workload list
+
 RUN dotnet publish Kitchen.Web/Kitchen.Web.csproj \
     -c Release \
-    -o /app/publish
+    -o /app/publish \
+    --verbosity detailed
 
 FROM nginx:1.27-alpine AS runtime
 
