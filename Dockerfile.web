@@ -21,6 +21,17 @@ RUN dotnet publish Kitchen.Web/Kitchen.Web.csproj \
     -c Release \
     -o /app/publish
 
+# In .NET 10 Blazor WASM with OverrideHtmlAssetPlaceholders=true, the SDK
+# replaces #[.{fingerprint}] placeholders in script tags but leaves the
+# importmap {} empty, so blazor.webassembly.js tries to fetch the unhashed
+# dotnet.js literally and gets a 404.  Create a re-export shim if missing.
+RUN HASH=$(ls /app/publish/wwwroot/_framework/ | grep -E '^dotnet\.[a-z0-9]+\.js$' | head -1) && \
+    if [ ! -f /app/publish/wwwroot/_framework/dotnet.js ] && [ -n "$HASH" ]; then \
+      printf 'export * from "./%s";\nexport { default } from "./%s";\n' "$HASH" "$HASH" \
+        > /app/publish/wwwroot/_framework/dotnet.js && \
+      echo "Created dotnet.js shim -> $HASH"; \
+    fi
+
 FROM nginx:1.27-alpine AS runtime
 
 COPY --from=build /app/publish/wwwroot /usr/share/nginx/html
