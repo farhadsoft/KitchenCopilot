@@ -10,8 +10,16 @@ var builder = WebApplication.CreateBuilder(args);
 // Aspire service defaults (telemetry, health checks, service discovery)
 builder.AddServiceDefaults();
 
-// EF Core + pgvector via Aspire connection string
-builder.AddNpgsqlDbContext<AppDbContext>("kitchendb");
+// EF Core + pgvector.
+// AddNpgsqlDbContext doesn't expose the Npgsql data source builder, so pgvector's
+// type mapping can't be registered through it. Use plain AddDbContext with UseVector()
+// instead. Aspire injects the connection string via ConnectionStrings__kitchendb env var.
+builder.Services.AddDbContext<AppDbContext>(options =>
+{
+    var connectionString = builder.Configuration.GetConnectionString("kitchendb")
+                           ?? "Host=localhost;Database=kitchendb";
+    options.UseNpgsql(connectionString, npgsql => npgsql.UseVector());
+});
 
 // Semantic Kernel with Ollama chat completion
 var ollamaUrl = builder.Configuration.GetConnectionString("ollama")

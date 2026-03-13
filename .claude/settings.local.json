@@ -30,7 +30,12 @@
       "Bash(tasklist 2>&1 | grep -i \"msiexec\\\\|setup\\\\|installer\\\\|vs_\\\\|visualstudio\")",
       "Bash(tasklist 2>&1 | grep -i \"msiexec\" && dotnet workload install wasm-tools-net10 2>&1 | tail -8)",
       "Bash(cd D:/GitHub/KitchenCopilot && dotnet build 2>&1 | grep -E \"\\(error CS|error NETSDK|error MSB|Build succeeded|Build FAILED\\)\" | head -20)",
-      "Bash(cd D:/GitHub/KitchenCopilot && dotnet build 2>&1 | grep -E \"\\(error CS|error NETSDK|Build succeeded|Build FAILED\\)\" | head -20)"
+      "Bash(cd D:/GitHub/KitchenCopilot && dotnet build 2>&1 | grep -E \"\\(error CS|error NETSDK|Build succeeded|Build FAILED\\)\" | head -20)",
+      "Bash(dotnet build:*)",
+      "Bash(dotnet script:*)",
+      "Bash(find \"C:/Users/dev/.nuget/packages/aspire.npgsql\" -name \"*.dll\" 2>/dev/null | head -5)",
+      "Bash(dotnet ilspy:*)",
+      "Bash(cd \"D:/GitHub/KitchenCopilot\" && dotnet ef migrations add InitialCreate --project Kitchen.Api --startup-project Kitchen.Api 2>&1)"
     ]
   }
 }
