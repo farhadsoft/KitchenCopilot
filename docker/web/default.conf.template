@@ -19,6 +19,15 @@ server {
         try_files $uri $uri/ /index.html;
     }
 
+    # Service worker and asset manifest must never be cached — browsers must always
+    # fetch the latest version so PWA updates propagate immediately after a deploy.
+    location ~* (service-worker\.js|service-worker-assets\.js)$ {
+        expires -1;
+        add_header Cache-Control "no-store, no-cache, must-revalidate";
+        add_header Cross-Origin-Opener-Policy  "same-origin" always;
+        add_header Cross-Origin-Embedder-Policy "require-corp" always;
+    }
+
     # Cache immutable hashed assets aggressively
     location ~* \.(js|css|wasm|woff2?|ttf|svg|png|ico)$ {
         expires 1y;
