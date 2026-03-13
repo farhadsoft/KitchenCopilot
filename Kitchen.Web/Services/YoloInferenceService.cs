@@ -14,7 +14,7 @@ public class YoloInferenceService(IJSRuntime js)
         return _module;
     }
 
-    public async Task<List<Ingredient>> DetectAsync(byte[] rgbaPixels, int width, int height, CancellationToken ct)
+    public async Task<List<Ingredient>> DetectAsync(int[] rgbaPixels, int width, int height, CancellationToken ct)
     {
         var module = await GetModuleAsync();
         var results = await module.InvokeAsync<DetectionResult[]>(

@@ -101,5 +101,5 @@
 
     private async Task OnGenerateRecipe() => await OnGenerateClicked.InvokeAsync();
 
-    private record PixelCapture(byte[] Rgba, int Width, int Height);
+    private record PixelCapture(int[] Rgba, int Width, int Height);
 }

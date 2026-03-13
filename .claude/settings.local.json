@@ -37,7 +37,22 @@
       "Bash(dotnet ilspy:*)",
       "Bash(cd \"D:/GitHub/KitchenCopilot\" && dotnet ef migrations add InitialCreate --project Kitchen.Api --startup-project Kitchen.Api 2>&1)",
       "mcp__context7__resolve-library-id",
-      "mcp__context7__query-docs"
+      "mcp__context7__query-docs",
+      "mcp__playwright__browser_navigate",
+      "Bash(netstat -ano 2>/dev/null | grep -E \"LISTENING\" | grep -E \":50[0-9]{2}|:80[0-9]{2}|:443[0-9]|:17[0-9]{3}|:51[0-9]{3}\" | head -20)",
+      "Bash(netstat -ano 2>/dev/null | grep \"LISTENING\" | grep -E \":\\(7[0-9]{3}|8[0-9]{3}|17[0-9]{3}|18[0-9]{3}\\)\" | head -20)",
+      "Bash(netstat -ano 2>/dev/null | grep \"LISTENING\" | grep -E \":\\(5[0-9]{3}|7[0-9]{3}|8[0-9]{3}\\)\" | head -30)",
+      "mcp__playwright__browser_wait_for",
+      "mcp__playwright__browser_click",
+      "mcp__playwright__browser_file_upload",
+      "mcp__playwright__browser_console_messages",
+      "mcp__playwright__browser_press_key",
+      "Bash(netstat -ano 2>/dev/null | grep \"LISTENING\" | grep -E \":\\(5[0-9]{3}|7[0-9]{3}\\)\" | head -20)",
+      "WebFetch(domain:registry.npmjs.org)",
+      "Bash(pip show:*)",
+      "Bash(mkdir -p \"D:/GitHub/KitchenCopilot/Kitchen.Web/wwwroot/models\" && pip install ultralytics --quiet 2>&1 | tail -5)",
+      "Bash(netstat -ano 2>/dev/null | grep \"LISTENING\" | grep -E \":\\(5[0-9]{3}|7[0-9]{3}\\)\" | head -15)",
+      "Bash(netstat -ano 2>/dev/null | grep \"LISTENING\" | grep -E \":70[0-9]{2}\" | head -10)"
     ]
   }
 }

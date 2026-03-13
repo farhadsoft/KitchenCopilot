@@ -20,10 +20,11 @@ dotnet ef migrations add <MigrationName> --project Kitchen.Api --startup-project
 dotnet ef database update --project Kitchen.Api --startup-project Kitchen.Api
 ```
 
-**Prerequisite:** The `wasm-tools-net10` dotnet workload must be installed for the Blazor WASM project to build under the .NET 11 SDK:
+**Prerequisite:** The solution is pinned to the stable .NET 10 SDK via `global.json` at the repo root. With the .NET 10 SDK active, install the native WASM tools:
 ```bash
-dotnet workload install wasm-tools-net10
+dotnet workload install wasm-tools
 ```
+> **Do NOT use the .NET 11 preview SDK** for this project. The `wasm-tools-net10` cross-targeting workload under .NET 11 preview bundles a native WASM runtime that is version-mismatched with the managed `10.0.5` NuGet packages, causing `MONO_WASM: index out of bounds` at startup. The `global.json` file pins `sdk.version` to `10.0.200` and ensures the stable toolchain is used.
 
 ## Architecture
 

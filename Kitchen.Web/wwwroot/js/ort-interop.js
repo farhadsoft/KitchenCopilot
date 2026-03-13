@@ -1,7 +1,7 @@
 // ONNX Runtime Web interop — runs inside a Web Worker to keep UI at 60 FPS
 // WebGPU priority with WASM SIMD fallback
 
-import * as ort from 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.21.0/dist/esm/ort.bundle.min.mjs';
+import * as ort from 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.24.3/dist/ort.bundle.min.mjs';
 
 ort.env.wasm.simd = true;
 ort.env.wasm.proxy = false; // already inside a worker
