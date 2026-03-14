@@ -81,8 +81,18 @@ export async function runInference(rgbaPixels, width, height) {
         if (overlaps.length === 0) kept.push(d);
     }
 
-    return kept.sort((a, b) => b.confidence - a.confidence).slice(0, 20);
+    return kept
+        .filter(d => FOOD_CLASSES.has(d.label))
+        .sort((a, b) => b.confidence - a.confidence)
+        .slice(0, 20);
 }
+
+// Food and beverage classes allowed through — everything else is suppressed
+const FOOD_CLASSES = new Set([
+    'bottle','wine glass','cup','bowl',
+    'banana','apple','sandwich','orange','broccoli','carrot',
+    'hot dog','pizza','donut','cake',
+]);
 
 // COCO class names (food-relevant subset shown first for clarity)
 const COCO_CLASSES = [

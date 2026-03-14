@@ -85,12 +85,15 @@
     private async Task CaptureFrame()
     {
         _loading = true;
-        _cameraActive = false;
         StateHasChanged();
-        JS.InvokeVoidAsync("kitchenCamera.stop"); // fire-and-forget; stop stream before capture
         try
         {
+            // Capture while the <video> element is still in the DOM, then stop the stream
             var pixelData = await JS.InvokeAsync<PixelCapture>("kitchenCamera.capture", "camera-feed", "image-canvas");
+            _cameraActive = false;
+            _ = JS.InvokeVoidAsync("kitchenCamera.stop"); // fire-and-forget after capture
+            StateHasChanged();
+            if (pixelData is null) return;
             DetectedIngredients = await YoloService.DetectAsync(pixelData.Rgba, pixelData.Width, pixelData.Height, default);
             await OnIngredientsDetected.InvokeAsync(DetectedIngredients);
         }
