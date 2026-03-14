@@ -91,7 +91,7 @@ The Blazor app resolves the API base URL from `ApiBaseUrl` config (set by Aspire
 
 ## Pending / Not Yet Implemented
 
-- `yolo26n.onnx` model file (NMS-free, INT8/Q4 quantized) — must be placed at `Kitchen.Web/wwwroot/models/yolo26n.onnx`
+- `food-detector.onnx` — food-specific YOLOv8n model (60+ ingredient classes). Must be placed at `Kitchen.Web/wwwroot/models/food-detector.onnx`. Download a YOLOv8n food-detection model from [Roboflow Universe](https://universe.roboflow.com) (search "food detection", filter YOLOv8, export ONNX). After placing the model, update `FOOD_CLASSES` in both `wwwroot/js/visionWorker.js` and `wwwroot/js/ort-interop.js` to match the model's exact class labels from its `data.yaml`.
 - `FindSimilarAsync` pgvector cosine search — stub until SK text embedding is configured
 - PWA offline caching in `service-worker.js` — currently the generated stub
 - `RecipeEndpoints.cs` non-streaming REST fallback for recipes

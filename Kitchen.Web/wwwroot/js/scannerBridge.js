@@ -11,7 +11,8 @@ window.kitchenScanner = {
         this._worker = new Worker('js/visionWorker.js', { type: 'module' });
         this._worker.onmessage = (e) => {
             if (this._active) {
-                this._dotNetRef.invokeMethodAsync('ProcessDetections', e.data.labels);
+                const labels = (e.data.detections ?? []).map(d => d.label);
+                this._dotNetRef.invokeMethodAsync('ProcessDetections', labels);
                 // Trigger next frame immediately for real-time feel
                 this._loop();
             }

@@ -3,49 +3,83 @@
 @inject YoloInferenceService YoloService
 @inject IJSRuntime JS
 
-<div class="kc-card">
-    <h2 class="kc-title" style="margin-bottom:16px;">Scan Your Fridge</h2>
-
-    <div class="kc-control-row">
-        <label class="kc-btn-primary" style="cursor:pointer;">
-            📷 Upload Photo
-            <InputFile OnChange="OnFileSelected" accept="image/*" style="display:none" />
-        </label>
-        <button class="kc-btn-secondary" @onclick="StartCamera" disabled="@_cameraActive">
-            🎥 Camera
-        </button>
-    </div>
-
+<div>
     @if (_cameraActive)
     {
-        <video id="camera-feed" autoplay playsinline class="kc-camera-feed" style="margin-bottom:12px;"></video>
-        <button class="kc-btn-primary" @onclick="CaptureFrame">Capture</button>
+        <div class="kc-camera-card" style="padding:16px;">
+            <video id="camera-feed" autoplay playsinline class="kc-camera-feed" style="margin-bottom:12px;"></video>
+            <button class="kc-btn-primary" @onclick="CaptureFrame">Capture</button>
+        </div>
+    }
+    else
+    {
+        <div class="kc-camera-card">
+            <div class="kc-camera-icon-wrap">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                    <circle cx="12" cy="13" r="4"/>
+                </svg>
+            </div>
+            <p class="kc-camera-hint">Point at your ingredients</p>
+        </div>
     }
 
     <canvas id="image-canvas" hidden></canvas>
 
     @if (_loading)
     {
-        <div class="kc-streaming-indicator" style="margin-top:12px;">
+        <div class="kc-streaming-indicator" style="margin-bottom:16px;">
             <span class="kc-pulse-dot"></span>
             Detecting ingredients…
         </div>
     }
-
-    @if (DetectedIngredients.Count > 0)
+    else if (!_cameraActive)
     {
-        <div class="kc-divider"></div>
-        <p class="kc-section-header">Detected Ingredients</p>
-        <div class="kc-chips">
-            @foreach (var ing in DetectedIngredients)
-            {
-                <span class="kc-chip">@ing.Name <small>@(ing.Confidence.ToString("P0"))</small></span>
-            }
+        <div class="kc-control-row" style="margin-bottom:16px;">
+            <label class="kc-btn-primary" style="cursor:pointer;">
+                ⚡ Start Live Scan
+                <InputFile OnChange="OnFileSelected" accept="image/*" style="display:none" />
+            </label>
+            <button class="kc-btn-secondary" @onclick="StartCamera">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                    <circle cx="12" cy="13" r="4"/>
+                </svg>
+                Camera
+            </button>
         </div>
-        <button class="kc-btn-primary" style="margin-top:8px;" @onclick="OnGenerateRecipe">
-            ✨ Generate Recipe
-        </button>
     }
+
+    <div>
+        <div class="kc-section-row">
+            <p class="kc-section-header" style="padding-bottom:0;">Detected Items</p>
+            <span class="kc-badge-edge">YOLO26 EDGE</span>
+        </div>
+
+        @if (DetectedIngredients.Count == 0)
+        {
+            <div class="kc-empty-state">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/>
+                    <path d="M7 2v20"/>
+                    <path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3zm0 0v7"/>
+                </svg>
+                <p class="kc-empty-state-text">Fridge is empty</p>
+            </div>
+        }
+        else
+        {
+            <div class="kc-chips">
+                @foreach (var ing in DetectedIngredients)
+                {
+                    <span class="kc-chip">@ing.Name <small>@(ing.Confidence.ToString("P0"))</small></span>
+                }
+            </div>
+            <button class="kc-btn-primary" style="margin-top:8px;" @onclick="OnGenerateRecipe">
+                ✨ Generate Recipe
+            </button>
+        }
+    </div>
 </div>
 
 @code {
@@ -59,14 +93,22 @@
 
     private async Task OnFileSelected(InputFileChangeEventArgs e)
     {
+        // Read bytes BEFORE StateHasChanged() — setting _loading=true unmounts InputFile,
+        // which invalidates the Blazor JS file reference (_blazorFilesById becomes null).
+        byte[] imageBytes;
+        var contentType = e.File.ContentType;
+        await using (var stream = e.File.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024))
+        {
+            using var ms = new MemoryStream();
+            await stream.CopyToAsync(ms);
+            imageBytes = ms.ToArray();
+        }
+
         _loading = true;
         StateHasChanged();
         try
         {
-            await using var stream = e.File.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024);
-            using var ms = new MemoryStream();
-            await stream.CopyToAsync(ms);
-            await RunInferenceAsync(ms.ToArray(), e.File.ContentType);
+            await RunInferenceAsync(imageBytes, contentType);
         }
         finally
         {
