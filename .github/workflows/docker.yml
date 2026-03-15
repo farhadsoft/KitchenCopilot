@@ -67,3 +67,10 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha,scope=${{ matrix.service }}
           cache-to: type=gha,scope=${{ matrix.service }},mode=max
+      
+      # 3. Add this step to pause the runner
+      - name: Pause for 30 seconds
+        run: sleep 30
+      # 4. THEN trigger Dokploy
+      - name: Trigger Dokploy Webhook
+        run: curl -X POST "${{ secrets.DOKPLOY_WEBHOOK_URL }}"
