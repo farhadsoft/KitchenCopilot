@@ -1,0 +1,41 @@
+@inherits LayoutComponentBase
+@inject IJSRuntime JS
+@implements IAsyncDisposable
+
+<LoadingScreen IsVisible="@(!_llmReady)" StatusText="@_loadingText" Progress="@_loadingProgress" />
+
+<div class="kc-app-shell">
+    <div class="kc-content">@Body</div>
+    <NavMenu />
+</div>
+
+@code {
+    bool _llmReady;
+    string _loadingText = "Loading AI model…";
+    int _loadingProgress;
+    DotNetObjectReference<MainLayout>? _dotNetRef;
+    IJSObjectReference? _llmModule;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+        _dotNetRef = DotNetObjectReference.Create(this);
+        _llmModule = await JS.InvokeAsync<IJSObjectReference>("import", "/js/llm-interop.js");
+        _ = _llmModule.InvokeVoidAsync("init", _dotNetRef);
+    }
+
+    [JSInvokable]
+    public void OnLoadingProgress(string text, int progress)
+    {
+        _loadingText = text;
+        _loadingProgress = progress;
+        if (progress >= 100) _llmReady = true;
+        StateHasChanged();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        _dotNetRef?.Dispose();
+        if (_llmModule is not null) await _llmModule.DisposeAsync();
+    }
+}

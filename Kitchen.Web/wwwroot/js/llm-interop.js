@@ -3,7 +3,7 @@
 
 import * as webllm from "https://esm.run/@mlc-ai/web-llm";
 
-const MODEL_ID = "SmolLM2-360M-Instruct-q4f16_1-MLC";
+const MODEL_ID = "Qwen2.5-0.5B-Instruct-q4f16_1-MLC";
 
 const PROMPT_TEMPLATE = `You are a practical chef. Given these ingredients: {ingredients}
 
@@ -30,6 +30,26 @@ async function getEngine() {
     engine = await enginePromise;
     enginePromise = null;
     return engine;
+}
+
+/**
+ * Initialises the LLM engine eagerly, reporting progress to a .NET callback.
+ * Call from MainLayout.OnAfterRenderAsync so the model loads in the background.
+ */
+export async function init(dotNetRef) {
+    if (engine) {
+        await dotNetRef.invokeMethodAsync('OnLoadingProgress', 'Ready', 100);
+        return;
+    }
+    enginePromise = webllm.CreateMLCEngine(MODEL_ID, {
+        initProgressCallback: async (report) => {
+            const pct = Math.round((report.progress ?? 0) * 100);
+            try { await dotNetRef.invokeMethodAsync('OnLoadingProgress', report.text ?? '', pct); } catch {}
+        },
+    });
+    engine = await enginePromise;
+    enginePromise = null;
+    await dotNetRef.invokeMethodAsync('OnLoadingProgress', 'Ready', 100);
 }
 
 /**

@@ -92,10 +92,7 @@ export async function runInference(rgbaPixels, width, height) {
         .map(({ label, confidence }) => ({ label, confidence }));
 }
 
-// Class labels — must match the model's training labels in index order.
-// Current: YOLOv8n COCO (80 classes). Non-food detections are suppressed by FOOD_FILTER below.
-// When switching to a food-specific model, replace this list with the model's data.yaml classes
-// and remove FOOD_FILTER entirely.
+// Class labels — COCO 80-class list, matches food-detector.onnx (YOLOv8n trained on coco.yaml)
 const FOOD_CLASSES = [
     'person','bicycle','car','motorcycle','airplane','bus','train','truck','boat',
     'traffic light','fire hydrant','stop sign','parking meter','bench',
@@ -110,8 +107,9 @@ const FOOD_CLASSES = [
     'hair drier','toothbrush',
 ];
 
-// Food-only allowlist — remove this when switching to a food-specific model
+// Food-only allowlist — suppress non-food COCO classes
 const FOOD_FILTER = new Set([
+    'bottle','wine glass','cup','fork','knife','spoon','bowl',
     'banana','apple','sandwich','orange','broccoli','carrot','hot dog','pizza',
     'donut','cake',
 ]);

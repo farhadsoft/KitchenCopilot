@@ -1,0 +1,74 @@
+@if (IsVisible)
+{
+    <div class="kc-loading-overlay">
+        <div class="kc-loading-card">
+            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
+                 stroke="#10B981" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
+                 style="margin-bottom:16px">
+                <path d="M3 11l19-9-9 19-2-8-8-2z" />
+            </svg>
+            <p class="kc-loading-status">@StatusText</p>
+            <div class="kc-loading-bar-track">
+                <div class="kc-loading-bar-fill" style="width:@(Progress)%"></div>
+            </div>
+            <p class="kc-loading-pct">@Progress%</p>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public bool IsVisible { get; set; }
+    [Parameter] public string StatusText { get; set; } = "Loading AI model…";
+    [Parameter] public int Progress { get; set; }
+}
+
+<style>
+    .kc-loading-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(15, 23, 42, 0.72);
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
+    }
+
+    .kc-loading-card {
+        background: rgba(30, 41, 59, 0.88);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 20px;
+        padding: 36px 44px;
+        min-width: 280px;
+        text-align: center;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+    }
+
+    .kc-loading-bar-track {
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 8px;
+        height: 6px;
+        margin: 16px 0 8px;
+        overflow: hidden;
+    }
+
+    .kc-loading-bar-fill {
+        height: 100%;
+        background: #10B981;
+        border-radius: 8px;
+        transition: width 0.3s ease;
+    }
+
+    .kc-loading-status {
+        color: #94A3B8;
+        font-size: 0.8rem;
+        margin: 0 0 4px;
+    }
+
+    .kc-loading-pct {
+        color: #10B981;
+        font-size: 0.75rem;
+        margin: 0;
+    }
+</style>

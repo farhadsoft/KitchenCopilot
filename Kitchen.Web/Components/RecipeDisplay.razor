@@ -57,8 +57,8 @@
         {
             await foreach (var token in LlmService.StreamAsync(Ingredients, _cts.Token))
             {
-                sb.Append(System.Net.WebUtility.HtmlEncode(token));
-                _recipe = sb.ToString().Replace("\n", "<br/>");
+                sb.Append(token);
+                _recipe = Markdig.Markdown.ToHtml(sb.ToString());
                 StateHasChanged();
             }
         }
