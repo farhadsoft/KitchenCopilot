@@ -204,6 +204,29 @@ h1:focus { outline: none; }
     font-size: 11px;
 }
 
+.kc-chip--removable { cursor: pointer; }
+.kc-chip--removable:hover { background: rgba(16,185,129,0.20); border-color: var(--kc-primary); }
+
+.kc-chip-remove {
+    margin-left: 4px;
+    font-size: 14px;
+    line-height: 1;
+    opacity: 0.5;
+}
+.kc-chip--removable:hover .kc-chip-remove { opacity: 1; }
+
+.kc-chip-input {
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--kc-text-1);
+    font-size: 14px;
+    min-width: 120px;
+    flex: 1;
+    padding: 2px 4px;
+}
+.kc-chip-input::placeholder { color: var(--kc-text-2); }
+
 /* ── Form inputs ── */
 .kc-input-group {
     display: flex;

@@ -56,25 +56,25 @@
             <span class="kc-badge-edge">YOLO26 EDGE</span>
         </div>
 
-        @if (DetectedIngredients.Count == 0)
+        <div class="kc-chips">
+            @foreach (var ing in DetectedIngredients)
+            {
+                <span class="kc-chip kc-chip--removable" @onclick="() => RemoveIngredient(ing)">
+                    @ing.Name <small>@(ing.Confidence.ToString("P0"))</small>
+                    <span class="kc-chip-remove" aria-label="Remove">×</span>
+                </span>
+            }
+            @if (DetectedIngredients.Count == 0)
+            {
+                <p class="kc-empty-state-text" style="margin:0;">Fridge is empty — type below to add</p>
+            }
+            <input class="kc-chip-input" placeholder="Add ingredient…"
+                   @bind="_newIngredientName" @bind:event="oninput"
+                   @onkeydown="OnAddKeyDown" />
+        </div>
+
+        @if (DetectedIngredients.Count > 0)
         {
-            <div class="kc-empty-state">
-                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                    <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/>
-                    <path d="M7 2v20"/>
-                    <path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3zm0 0v7"/>
-                </svg>
-                <p class="kc-empty-state-text">Fridge is empty</p>
-            </div>
-        }
-        else
-        {
-            <div class="kc-chips">
-                @foreach (var ing in DetectedIngredients)
-                {
-                    <span class="kc-chip">@ing.Name <small>@(ing.Confidence.ToString("P0"))</small></span>
-                }
-            </div>
             <button class="kc-btn-primary" style="margin-top:8px;" @onclick="OnGenerateRecipe">
                 ✨ Generate Recipe
             </button>
@@ -90,6 +90,7 @@
 
     private bool _loading;
     private bool _cameraActive;
+    private string _newIngredientName = string.Empty;
 
     private async Task OnFileSelected(InputFileChangeEventArgs e)
     {
@@ -149,6 +150,26 @@
     {
         var pixelData = await JS.InvokeAsync<PixelCapture>("kitchenCamera.decodeImage", imageBytes, "image-canvas", contentType);
         DetectedIngredients = await YoloService.DetectAsync(pixelData.Rgba, pixelData.Width, pixelData.Height, default);
+        await OnIngredientsDetected.InvokeAsync(DetectedIngredients);
+    }
+
+    private async Task AddIngredient()
+    {
+        var name = _newIngredientName.Trim();
+        if (string.IsNullOrEmpty(name)) return;
+        DetectedIngredients = [.. DetectedIngredients, new Ingredient(name, 1f)];
+        _newIngredientName = string.Empty;
+        await OnIngredientsDetected.InvokeAsync(DetectedIngredients);
+    }
+
+    private async Task OnAddKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter") await AddIngredient();
+    }
+
+    private async Task RemoveIngredient(Ingredient ing)
+    {
+        DetectedIngredients = DetectedIngredients.Where(i => i != ing).ToList();
         await OnIngredientsDetected.InvokeAsync(DetectedIngredients);
     }
 
