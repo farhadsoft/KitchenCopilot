@@ -1,4 +1,5 @@
 using Kitchen.Shared.Models;
+using Kitchen.Web.Models;
 using Microsoft.JSInterop;
 using System.Runtime.CompilerServices;
 using System.Threading.Channels;
@@ -17,6 +18,7 @@ public class BrowserLlmService(IJSRuntime js)
 
     public async IAsyncEnumerable<string> StreamAsync(
         IReadOnlyList<Ingredient> ingredients,
+        LlmSettings settings,
         [EnumeratorCancellation] CancellationToken ct)
     {
         var module = await GetModuleAsync(ct);
@@ -27,7 +29,7 @@ public class BrowserLlmService(IJSRuntime js)
         var labels = ingredients.Select(i => i.Name).ToArray();
 
         // Fire-and-forget — JS calls OnToken/OnComplete/OnError on the callback
-        _ = module.InvokeVoidAsync("streamRecipe", ct, labels, dotnetRef);
+        _ = module.InvokeVoidAsync("streamRecipe", ct, labels, dotnetRef, settings);
 
         await foreach (var token in channel.Reader.ReadAllAsync(ct))
             yield return token;

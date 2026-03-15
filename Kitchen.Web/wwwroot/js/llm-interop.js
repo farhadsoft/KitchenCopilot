@@ -57,16 +57,17 @@ export async function init(dotNetRef) {
  * Calls dotnetCallback.OnToken(token) for each chunk,
  * OnComplete() when done, OnError(message) on failure.
  */
-export async function streamRecipe(ingredients, dotnetCallback) {
+export async function streamRecipe(ingredients, dotnetCallback, settings) {
     try {
         const eng = await getEngine();
         const prompt = PROMPT_TEMPLATE.replace("{ingredients}", ingredients.join(", "));
 
+        console.log(`[LLM] streamRecipe settings:`, settings);
         const stream = await eng.chat.completions.create({
             messages: [{ role: "user", content: prompt }],
-            temperature: 0.7,
-            max_tokens: 512,
-            frequency_penalty: 0.5,
+            temperature: settings?.temperature ?? 0.7,
+            max_tokens: settings?.maxTokens ?? 512,
+            frequency_penalty: settings?.frequencyPenalty ?? 0.5,
             stream: true,
         });
 

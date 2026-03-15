@@ -1,0 +1,99 @@
+@page "/history"
+@using Kitchen.Web.Models
+@using Kitchen.Web.Services
+@inject HistoryService HistoryService
+
+<div class="kc-page">
+    <div class="kc-page-header">
+        <h1 class="kc-page-title">History</h1>
+        @if (_entries.Count > 0)
+        {
+            <button class="kc-btn kc-btn-ghost kc-history-delete" @onclick="ClearAll">Clear All</button>
+        }
+    </div>
+
+    @if (_entries.Count == 0)
+    {
+        <div class="kc-card kc-history-empty">
+            <p>No recipes saved yet. Scan your fridge to get started!</p>
+        </div>
+    }
+    else
+    {
+        @foreach (var entry in _entries)
+        {
+            var entryId = entry.Id;
+            var title = ExtractTitle(entry.RecipeMarkdown);
+            var isExpanded = _expandedId == entryId;
+
+            <div class="kc-card kc-history-entry">
+                <div class="kc-history-meta">
+                    <span class="kc-label">@title</span>
+                    <span class="kc-caption">@entry.Timestamp.LocalDateTime.ToString("MMM d, h:mm tt")</span>
+                    <button class="kc-btn kc-btn-icon kc-history-delete" @onclick="() => DeleteEntry(entryId)" title="Delete">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+                        </svg>
+                    </button>
+                </div>
+
+                @if (entry.Ingredients.Count > 0)
+                {
+                    <div class="kc-chips">
+                        @foreach (var ingredient in entry.Ingredients)
+                        {
+                            <span class="kc-chip">@ingredient</span>
+                        }
+                    </div>
+                }
+
+                <button class="kc-btn kc-btn-ghost kc-history-toggle" @onclick="() => ToggleExpand(entryId)">
+                    @(isExpanded ? "Hide recipe" : "Show recipe")
+                </button>
+
+                @if (isExpanded)
+                {
+                    <div class="kc-recipe-preview">
+                        @((MarkupString)Markdig.Markdown.ToHtml(entry.RecipeMarkdown))
+                    </div>
+                }
+            </div>
+        }
+    }
+</div>
+
+@code {
+    private List<HistoryEntry> _entries = [];
+    private string? _expandedId;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _entries = await HistoryService.GetAllAsync();
+    }
+
+    private void ToggleExpand(string id)
+    {
+        _expandedId = _expandedId == id ? null : id;
+    }
+
+    private async Task DeleteEntry(string id)
+    {
+        await HistoryService.DeleteAsync(id);
+        _entries.RemoveAll(e => e.Id == id);
+        if (_expandedId == id) _expandedId = null;
+    }
+
+    private async Task ClearAll()
+    {
+        await HistoryService.ClearAllAsync();
+        _entries.Clear();
+        _expandedId = null;
+    }
+
+    private static string ExtractTitle(string markdown)
+    {
+        var line = markdown.Split('\n')
+            .FirstOrDefault(l => l.StartsWith("# "));
+        return line is not null ? line[2..].Trim() : "Recipe";
+    }
+}

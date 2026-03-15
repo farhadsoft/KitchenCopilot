@@ -1,0 +1,99 @@
+@page "/settings"
+@using Kitchen.Web.Models
+@using Kitchen.Web.Services
+@inject SettingsService SettingsService
+
+<div class="kc-page">
+    <div class="kc-page-header">
+        <h1 class="kc-page-title">Settings</h1>
+    </div>
+
+    <div class="kc-card">
+        <h2 class="kc-settings-section-title">Recipe Generation</h2>
+
+        <div class="kc-settings-field">
+            <label class="kc-settings-label" for="temperature">
+                Temperature
+                <span class="kc-settings-value">@_temperature.ToString("F1")</span>
+            </label>
+            <input id="temperature" type="range" class="kc-slider"
+                   min="0.0" max="2.0" step="0.1"
+                   value="@_temperature"
+                   @oninput="e => _temperature = float.Parse(e.Value!.ToString()!)" />
+            <div class="kc-settings-hint">Controls randomness. Lower = more predictable, higher = more creative.</div>
+        </div>
+
+        <div class="kc-settings-field">
+            <label class="kc-settings-label" for="maxTokens">
+                Max Tokens
+                <span class="kc-settings-value">@_maxTokens</span>
+            </label>
+            <input id="maxTokens" type="range" class="kc-slider"
+                   min="128" max="2048" step="128"
+                   value="@_maxTokens"
+                   @oninput="e => _maxTokens = int.Parse(e.Value!.ToString()!)" />
+            <div class="kc-settings-hint">Maximum length of the generated recipe.</div>
+        </div>
+
+        <div class="kc-settings-field">
+            <label class="kc-settings-label" for="frequencyPenalty">
+                Frequency Penalty
+                <span class="kc-settings-value">@_frequencyPenalty.ToString("F1")</span>
+            </label>
+            <input id="frequencyPenalty" type="range" class="kc-slider"
+                   min="0.0" max="2.0" step="0.1"
+                   value="@_frequencyPenalty"
+                   @oninput="e => _frequencyPenalty = float.Parse(e.Value!.ToString()!)" />
+            <div class="kc-settings-hint">Reduces repetition. Higher values discourage repeated words.</div>
+        </div>
+
+        <div class="kc-settings-actions">
+            <button class="kc-btn kc-btn-primary" @onclick="SaveAsync">Save</button>
+            <button class="kc-btn kc-btn-ghost" @onclick="ResetAsync">Reset to defaults</button>
+            @if (_saved)
+            {
+                <span class="kc-settings-saved">Saved!</span>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    private float _temperature = 0.7f;
+    private int _maxTokens = 512;
+    private float _frequencyPenalty = 0.5f;
+    private bool _saved;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var settings = await SettingsService.GetAsync();
+        _temperature = settings.Temperature;
+        _maxTokens = settings.MaxTokens;
+        _frequencyPenalty = settings.FrequencyPenalty;
+    }
+
+    private async Task SaveAsync()
+    {
+        await SettingsService.SaveAsync(new LlmSettings
+        {
+            Temperature = _temperature,
+            MaxTokens = _maxTokens,
+            FrequencyPenalty = _frequencyPenalty
+        });
+
+        _saved = true;
+        StateHasChanged();
+        await Task.Delay(2000);
+        _saved = false;
+        StateHasChanged();
+    }
+
+    private async Task ResetAsync()
+    {
+        var defaults = new LlmSettings();
+        _temperature = defaults.Temperature;
+        _maxTokens = defaults.MaxTokens;
+        _frequencyPenalty = defaults.FrequencyPenalty;
+        _saved = false;
+    }
+}

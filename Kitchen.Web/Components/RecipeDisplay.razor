@@ -1,6 +1,9 @@
 @using Kitchen.Shared.Models
+@using Kitchen.Web.Models
 @using Kitchen.Web.Services
 @inject BrowserLlmService LlmService
+@inject Kitchen.Web.Services.HistoryService HistoryService
+@inject Kitchen.Web.Services.SettingsService SettingsService
 @implements IAsyncDisposable
 
 <div class="kc-card">
@@ -35,7 +38,14 @@
     private string _recipe = string.Empty;
     private string? _error;
     private bool _streaming;
+    private bool _cancelled;
     private CancellationTokenSource _cts = new();
+    private LlmSettings _settings = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _settings = await SettingsService.GetAsync();
+    }
 
     protected override async Task OnParametersSetAsync()
     {
@@ -45,24 +55,26 @@
 
     private async Task StartStreamingAsync()
     {
+        _settings = await SettingsService.GetAsync();
         await _cts.CancelAsync();
         _cts = new CancellationTokenSource();
         _recipe = string.Empty;
         _error = null;
         _streaming = true;
+        _cancelled = false;
 
         var sb = new System.Text.StringBuilder();
 
         try
         {
-            await foreach (var token in LlmService.StreamAsync(Ingredients, _cts.Token))
+            await foreach (var token in LlmService.StreamAsync(Ingredients, _settings, _cts.Token))
             {
                 sb.Append(token);
                 _recipe = Markdig.Markdown.ToHtml(sb.ToString());
                 StateHasChanged();
             }
         }
-        catch (OperationCanceledException) { }
+        catch (OperationCanceledException) { _cancelled = true; }
         catch (Exception ex)
         {
             _error = ex.Message;
@@ -70,6 +82,11 @@
         finally
         {
             _streaming = false;
+            if (_error is null && !_cancelled && sb.Length > 0)
+            {
+                var names = Ingredients.Select(i => i.Name).ToList();
+                await HistoryService.SaveAsync(names, sb.ToString());
+            }
             StateHasChanged();
         }
     }
